@@ -4,43 +4,25 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { containerVariants, itemVariants, scrollReveal } from '@/lib/animations';
+import { urlFor } from '@/lib/sanity.client';
 
-// Mock data - será reemplazado por datos de Sanity
-const mockWorks = [
-  {
-    id: 1,
-    title: 'Casa Carolina',
-    location: 'Mar de las Pampas',
-    year: 2019,
-    slug: 'casa-carolina',
-    category: 'Casa Nueva',
-    image: '/Img/CASA CAROLINA/SaveClip.App_426985872_1135797071207775_2804125062818619571_n.jpg',
-    area: '216 m²',
-    description: 'Proyecto residencial de 216m² que ejemplifica el compromiso con la arquitectura sustentable y el diseño contemporáneo en Mar de las Pampas.',
-  },
-  {
-    id: 2,
-    title: 'Casa Prana',
-    location: 'Calle Vega y Artes, Mar de las Pampas',
-    year: 2013,
-    slug: 'casa-prana',
-    category: 'Casa Nueva',
-    image: '/Img/casa-prana-destacada.jpg',
-    area: '151.07 m²',
-    description: 'Queremos agradecer mucho a Marcelo y Mónica por confiar en nosotros para este proyecto. Ha sido genial trabajar con ustedes y ayudar a hacer realidad sus ideas.',
-  },
-  {
-    id: 3,
-    title: 'Casa Antü Pewen',
-    location: 'Mar de las Pampas',
-    year: 2023,
-    slug: 'casa-antu-pewen',
-    category: 'Casa Nueva',
-    image: '/Img/casa Antü Pewen/86_1_n.jpg',
-  },
-];
+type FeaturedWork = {
+  _id?: string;
+  title: string;
+  slug: string;
+  location?: string;
+  year?: number;
+  category?: string[] | string;
+  coverImage?: any;
+};
 
-export default function FeaturedWorks() {
+type FeaturedWorksProps = {
+  works: FeaturedWork[];
+};
+
+export default function FeaturedWorks({ works }: FeaturedWorksProps) {
+  const items = Array.isArray(works) ? works : [];
+
   return (
     <section className="section bg-white relative">
       <div className="container-page">
@@ -66,9 +48,17 @@ export default function FeaturedWorks() {
           viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 mb-16"
         >
-          {mockWorks.map((work) => (
+          {items.map((work) => {
+            const categoryLabel = Array.isArray(work.category)
+              ? work.category[0]
+              : work.category || 'Proyecto';
+            const imageUrl = work.coverImage
+              ? urlFor(work.coverImage).width(900).height(1200).url()
+              : null;
+
+            return (
             <motion.div
-              key={work.id}
+              key={work._id ?? work.slug}
               variants={itemVariants}
               className="group"
             >
@@ -76,10 +66,10 @@ export default function FeaturedWorks() {
                 <div className="card p-0 mb-6 relative overflow-hidden">
                   {/* Ratio consistente 3:4 para todas las imágenes */}
                   <div className="relative overflow-hidden aspect-[3/4] bg-gradient-to-br from-[#F7F4EF] via-[#E8E4DF] to-[#D8D4CF]">
-                    {work.image ? (
+                    {imageUrl ? (
                       <Image
-                        src={work.image}
-                        alt={`${work.title} – ${work.category} – fachada exterior y diseño arquitectónico – ${work.location}`}
+                        src={imageUrl}
+                        alt={`${work.title} – ${categoryLabel} – fachada exterior y diseño arquitectónico – ${work.location ?? 'Ubicación'}`}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -124,7 +114,9 @@ export default function FeaturedWorks() {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(work.location)}`, '_blank', 'noopener,noreferrer');
+                      if (work.location) {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(work.location)}`, '_blank', 'noopener,noreferrer');
+                      }
                     }}
                     className="text-[var(--ink-light)] text-xs uppercase tracking-[0.2em] font-light hover:text-[var(--brand)] transition-colors inline-flex items-center gap-1 cursor-pointer"
                   >
@@ -132,20 +124,21 @@ export default function FeaturedWorks() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    {work.location}
+                    {work.location ?? 'Ubicación'}
                   </button>
                   <h3 className="text-xl md:text-2xl font-playfair font-medium text-[var(--ink)] group-hover:text-[var(--brand)] transition-colors duration-400 leading-tight">
                     {work.title}
                   </h3>
                   <div className="flex items-center gap-2 text-xs text-[var(--brand)] uppercase tracking-[0.15em] font-light">
-                    <span>{work.category}</span>
+                    <span>{categoryLabel}</span>
                     <span className="w-1 h-1 bg-[var(--brand)]/40 rounded-full" />
-                    <span>{work.year}</span>
+                    <span>{work.year ?? '—'}</span>
                   </div>
                 </div>
               </Link>
             </motion.div>
-          ))}
+            );
+          })}
         </motion.div>
 
         <motion.div

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import NextImage from 'next/image';
+import { PortableText } from '@portabletext/react';
+import { urlFor } from '@/lib/sanity.client';
 
 // Mock data - será reemplazado por datos de Sanity
 const mockProjects: Record<string, any> = {
@@ -846,22 +848,101 @@ const projectSlugs = ['casa-carolina', 'casa-marinas', 'casa-myj', 'casa-martin-
 
 export default function ProjectDetail() {
   const params = useParams();
-  const slug = params.slug as string;
-  const mockProjectDetail = mockProjects[slug] || mockProjects['casa-marinas'];
+  const rawSlug = params.slug as string | string[] | undefined;
+  const slug = Array.isArray(rawSlug) ? rawSlug[0] : rawSlug;
+  const fallbackProject = slug ? (mockProjects[slug] || mockProjects['casa-marinas']) : mockProjects['casa-marinas'];
+  const [project, setProject] = useState<any | null>(fallbackProject);
+  const [projectSlugsState, setProjectSlugsState] = useState<string[]>(projectSlugs);
+  const [isLoading, setIsLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(0);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProject = async () => {
+      if (!slug) return;
+
+      try {
+        const response = await fetch(`/api/works/${slug}`, { cache: 'no-store' });
+        if (response.ok) {
+          const data = await response.json();
+          if (data && isMounted) {
+            setProject(data);
+          }
+        }
+      } catch (error) {
+        console.error('No se pudo cargar la obra desde Sanity:', error);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    loadProject();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSlugs = async () => {
+      try {
+        const response = await fetch('/api/works', { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+
+        if (Array.isArray(data) && data.length > 0 && isMounted) {
+          const slugs = data.map((item: any) => item.slug).filter(Boolean);
+          if (slugs.length > 0) setProjectSlugsState(slugs);
+        }
+      } catch (error) {
+        console.error('No se pudieron cargar los slugs desde Sanity:', error);
+      }
+    };
+
+    loadSlugs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Calcular el índice actual y los slugs anterior/siguiente
-  const currentIndex = projectSlugs.indexOf(slug);
-  const prevIndex = (currentIndex - 1 + projectSlugs.length) % projectSlugs.length;
-  const nextIndex = (currentIndex + 1) % projectSlugs.length;
-  const prevSlug = projectSlugs[prevIndex];
-  const nextSlug = projectSlugs[nextIndex];
+  const activeSlugs = projectSlugsState.length > 0 ? projectSlugsState : projectSlugs;
+  const currentIndex = slug ? activeSlugs.indexOf(slug) : 0;
+  const prevIndex = (currentIndex - 1 + activeSlugs.length) % activeSlugs.length;
+  const nextIndex = (currentIndex + 1) % activeSlugs.length;
+  const prevSlug = activeSlugs[prevIndex];
+  const nextSlug = activeSlugs[nextIndex];
 
   const openLightbox = (idx: number) => {
     setLightboxImage(idx);
     setLightboxOpen(true);
   };
+
+  const categoryLabel = Array.isArray(project?.category)
+    ? project?.category[0]
+    : project?.category || project?.type || 'Proyecto';
+  const galleryImages = project?.galleryImages ?? project?.images ?? [];
+
+  if (!project && !isLoading) {
+    return (
+      <main className="min-h-screen pt-24 pb-20 bg-paper">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/obras"
+            className="inline-flex items-center gap-2 text-brand hover:text-brand-dark transition mb-8"
+          >
+            <span>←</span> Volver a Obras
+          </Link>
+          <h1 className="text-3xl font-bold text-ink">Obra no encontrada</h1>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen pt-24 pb-20 bg-paper">
@@ -882,34 +963,34 @@ export default function ProjectDetail() {
           className="mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-ink mb-4">
-            {mockProjectDetail.title}
+            {project?.title ?? 'Obra'}
           </h1>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-brand/10">
             <div>
               <p className="text-ink-light text-sm mb-1">Ubicación</p>
               <a 
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mockProjectDetail.location)}`}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project?.location ?? '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-brand hover:text-brand-dark transition-colors underline decoration-brand/30 hover:decoration-brand"
               >
-                {mockProjectDetail.location}
+                {project?.location ?? 'Ubicación'}
               </a>
             </div>
             <div>
               <p className="text-ink-light text-sm mb-1">Año</p>
-              <p className="font-semibold text-ink">{mockProjectDetail.year}</p>
+              <p className="font-semibold text-ink">{project?.year ?? '—'}</p>
             </div>
             <div>
               <p className="text-ink-light text-sm mb-1">Superficie</p>
               <p className="font-semibold text-ink">
-                {mockProjectDetail.areaM2 > 0 ? `${mockProjectDetail.areaM2}m²` : '?'}
+                {(project?.areaM2 ?? 0) > 0 ? `${project?.areaM2}m²` : '?'}
               </p>
             </div>
             <div>
               <p className="text-ink-light text-sm mb-1">Tipo</p>
-              <p className="font-semibold text-ink">{mockProjectDetail.type}</p>
+              <p className="font-semibold text-ink">{categoryLabel}</p>
             </div>
           </div>
         </motion.div>
@@ -922,9 +1003,15 @@ export default function ProjectDetail() {
           viewport={{ once: true }}
           className="mb-16 max-w-3xl"
         >
-          <p className="text-lg text-ink-light leading-relaxed">
-            {mockProjectDetail.description}
-          </p>
+          {Array.isArray(project?.description) ? (
+            <div className="prose prose-lg max-w-none text-ink-light">
+              <PortableText value={project?.description} />
+            </div>
+          ) : (
+            <p className="text-lg text-ink-light leading-relaxed">
+              {project?.description ?? ''}
+            </p>
+          )}
         </motion.div>
 
         {/* Gallery */}
@@ -938,24 +1025,34 @@ export default function ProjectDetail() {
           <h2 className="text-3xl font-bold text-ink mb-8">Galería</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {mockProjectDetail.images.map((img: any, idx: number) => (
-              <motion.div
-                key={img.id}
-                whileHover={{ scale: 1.02 }}
-                className="relative overflow-hidden rounded-xl cursor-pointer aspect-video bg-gradient-to-br from-brand/10 to-brand-dark/10 group"
-                onClick={() => openLightbox(idx)}
-              >
-                <NextImage
-                  src={img.url}
-                  alt={`${mockProjectDetail.title} - Imagen ${idx + 1}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                  placeholder="blur"
-                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y3RjRFRiIvPjwvc3ZnPg=="
-                />
-              </motion.div>
-            ))}
+            {galleryImages.map((img: any, idx: number) => {
+              const imageUrl = img?.url
+                ? img.url
+                : img
+                  ? urlFor(img).width(1600).height(900).url()
+                  : null;
+
+              return (
+                <motion.div
+                  key={img?._key ?? img?.id ?? idx}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative overflow-hidden rounded-xl cursor-pointer aspect-video bg-gradient-to-br from-brand/10 to-brand-dark/10 group"
+                  onClick={() => openLightbox(idx)}
+                >
+                  {imageUrl && (
+                    <NextImage
+                      src={imageUrl}
+                      alt={`${project?.title ?? 'Obra'} - Imagen ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                      placeholder="blur"
+                      blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y3RjRFRiIvPjwvc3ZnPg=="
+                    />
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* Lightbox */}
@@ -968,14 +1065,16 @@ export default function ProjectDetail() {
               onClick={() => setLightboxOpen(false)}
             >
               <div className="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden">
-                <NextImage
-                  src={mockProjectDetail.images[lightboxImage].url}
-                  alt={`${mockProjectDetail.title} - Imagen ${lightboxImage + 1}`}
-                  fill
-                  sizes="100vw"
-                  className="object-contain"
-                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                />
+                {galleryImages[lightboxImage] && (
+                  <NextImage
+                    src={galleryImages[lightboxImage]?.url ?? urlFor(galleryImages[lightboxImage]).width(2000).height(1125).url()}
+                    alt={`${project?.title ?? 'Obra'} - Imagen ${lightboxImage + 1}`}
+                    fill
+                    sizes="100vw"
+                    className="object-contain"
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                  />
+                )}
 
                 {/* Close button */}
                 <button
@@ -995,8 +1094,8 @@ export default function ProjectDetail() {
                     e.stopPropagation();
                     setLightboxImage(
                       (prev) =>
-                        (prev - 1 + mockProjectDetail.images.length) %
-                        mockProjectDetail.images.length
+                        (prev - 1 + galleryImages.length) %
+                        galleryImages.length
                     );
                   }}
                 >
@@ -1010,7 +1109,7 @@ export default function ProjectDetail() {
                     e.stopPropagation();
                     setLightboxImage(
                       (prev) =>
-                        (prev + 1) % mockProjectDetail.images.length
+                        (prev + 1) % galleryImages.length
                     );
                   }}
                 >
@@ -1019,7 +1118,7 @@ export default function ProjectDetail() {
 
                 {/* Image counter */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-full">
-                  {lightboxImage + 1} / {mockProjectDetail.images.length}
+                  {lightboxImage + 1} / {galleryImages.length}
                 </div>
               </div>
             </motion.div>

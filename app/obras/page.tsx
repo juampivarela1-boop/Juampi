@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { urlFor } from '@/lib/sanity.client';
 
 // Mock data - será reemplazado por datos de Sanity
 const mockWorks = [
@@ -448,12 +449,68 @@ const mockWorks = [
   },
 ];
 
-const categories = ['Todas', 'Obras Entregadas', 'En Obra'];
+const categories = [
+  'Todas',
+  'Obras Entregadas',
+  'En Obra',
+  'Casa Nueva',
+  'Reforma',
+  'Ampliación',
+  'Interiorismo',
+  'Dirección de Obra',
+];
 
 export default function ObrasList() {
+  const [works, setWorks] = useState(mockWorks);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'location'>('newest');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadWorks = async () => {
+      try {
+        const response = await fetch('/api/works', { cache: 'no-store' });
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0 && isMounted) {
+          setWorks(data);
+        }
+      } catch (error) {
+        console.error('No se pudieron cargar obras desde Sanity:', error);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    loadWorks();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const getCategoryLabel = (category: string[] | string | undefined) => {
+    if (Array.isArray(category)) return category[0];
+    return category || 'Proyecto';
+  };
+
+  const matchesCategory = (category: string[] | string | undefined, selected: string) => {
+    if (selected === 'Todas') return true;
+    if (Array.isArray(category)) return category.includes(selected);
+    return category === selected;
+  };
+
+  const getWorkImageUrl = (work: any) => {
+    if (work.image) return work.image;
+    if (work.coverImage) {
+      return urlFor(work.coverImage).width(1200).height(675).url();
+    }
+    return null;
+  };
 
   // Función para extraer la ciudad principal de una ubicación
   const extractCity = (location: string): string => {
@@ -471,16 +528,16 @@ export default function ObrasList() {
   };
 
   // Filtrar obras según categoría seleccionada
-  let filteredWorks = selectedCategory === 'Todas'
-    ? mockWorks
-    : mockWorks.filter(work => work.category === selectedCategory);
+  let filteredWorks = works.filter((work) =>
+    matchesCategory(work.category, selectedCategory)
+  );
 
   // Ordenar obras según el orden seleccionado
   filteredWorks = [...filteredWorks].sort((a, b) => {
     if (sortOrder === 'newest') {
-      return b.year - a.year;
+      return (b.year ?? 0) - (a.year ?? 0);
     } else if (sortOrder === 'oldest') {
-      return a.year - b.year;
+      return (a.year ?? 0) - (b.year ?? 0);
     } else {
       // Ordenar por ciudad principal alfabéticamente
       const cityA = extractCity(a.location);
@@ -492,7 +549,7 @@ export default function ObrasList() {
   // Agrupar obras por ciudad cuando se ordena por localidad
   const groupedByLocation = sortOrder === 'location' 
     ? filteredWorks.reduce((acc, work) => {
-        const locationKey = extractCity(work.location);
+        const locationKey = extractCity(work.location ?? '');
         if (!acc[locationKey]) {
           acc[locationKey] = [];
         }
@@ -608,62 +665,68 @@ export default function ObrasList() {
                   <span className="text-sm font-normal text-[var(--ink-light)]">({works.length} {works.length === 1 ? 'obra' : 'obras'})</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {works.map((work) => (
-                    <Link
-                      key={work.id}
-                      href={`/obras/${work.slug}`}
-                      className="group"
-                    >
-                      <div className="relative overflow-hidden rounded-xl mb-4 aspect-video bg-gradient-to-br from-brand/10 to-brand-dark/10">
-                        {work.image ? (
-                          <Image
-                            src={work.image}
-                            alt={`${work.title} - ${work.location}`}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            placeholder="blur"
-                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y3RjRFRiIvPjwvc3ZnPg=="
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <svg
-                              className="w-20 h-20 text-[#D07A22]/20"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1}
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                          </div>
-                        )}
-              
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
+                  {works.map((work) => {
+                    const imageUrl = getWorkImageUrl(work);
+                    const categoryLabel = getCategoryLabel(work.category);
+                    const areaValue = work.areaM2 ?? 0;
 
-                      <div className="space-y-1.5">
-                        <h3 className="text-lg font-semibold text-[var(--ink)] group-hover:text-[var(--brand)] transition-colors">
-                          {work.title}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-[var(--brand)]">
-                          <span>{work.category}</span>
-                          <span className="w-1 h-1 bg-[var(--brand)]/40 rounded-full" />
-                          <span>{work.year}</span>
-                          {work.areaM2 > 0 && (
-                            <>
-                              <span className="w-1 h-1 bg-[var(--brand)]/40 rounded-full" />
-                              <span>{work.areaM2}m²</span>
-                            </>
+                    return (
+                      <Link
+                        key={work._id ?? work.id ?? work.slug}
+                        href={`/obras/${work.slug}`}
+                        className="group"
+                      >
+                        <div className="relative overflow-hidden rounded-xl mb-4 aspect-video bg-gradient-to-br from-brand/10 to-brand-dark/10">
+                          {imageUrl ? (
+                            <Image
+                              src={imageUrl}
+                              alt={`${work.title} - ${work.location ?? 'Ubicación'}`}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                              placeholder="blur"
+                              blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y3RjRFRiIvPjwvc3ZnPg=="
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <svg
+                                className="w-20 h-20 text-[#D07A22]/20"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={1}
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </div>
                           )}
+
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
-                      </div>
-                    </Link>
-                  ))}
+
+                        <div className="space-y-1.5">
+                          <h3 className="text-lg font-semibold text-[var(--ink)] group-hover:text-[var(--brand)] transition-colors">
+                            {work.title}
+                          </h3>
+                          <div className="flex items-center gap-2 text-sm text-[var(--brand)]">
+                            <span>{categoryLabel}</span>
+                            <span className="w-1 h-1 bg-[var(--brand)]/40 rounded-full" />
+                            <span>{work.year ?? '—'}</span>
+                            {areaValue > 0 && (
+                              <>
+                                <span className="w-1 h-1 bg-[var(--brand)]/40 rounded-full" />
+                                <span>{areaValue}m²</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -671,67 +734,75 @@ export default function ObrasList() {
         ) : (
           // Vista normal (por fecha)
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredWorks.map((work) => (
-            <Link
-              key={work.id}
-              href={`/obras/${work.slug}`}
-              className="group"
-            >
-              <div className="relative overflow-hidden rounded-xl mb-4 aspect-video bg-gradient-to-br from-brand/10 to-brand-dark/10">
-                {work.image ? (
-                  <Image
-                    src={work.image}
-                    alt={`${work.title} - ${work.location}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    placeholder="blur"
-                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y3RjRFRiIvPjwvc3ZnPg=="
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <svg
-                      className="w-20 h-20 text-[#D07A22]/20"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
+          {filteredWorks.map((work) => {
+            const imageUrl = getWorkImageUrl(work);
+            const categoryLabel = getCategoryLabel(work.category);
+            const areaValue = work.areaM2 ?? 0;
+
+            return (
+              <Link
+                key={work._id ?? work.id ?? work.slug}
+                href={`/obras/${work.slug}`}
+                className="group"
+              >
+                <div className="relative overflow-hidden rounded-xl mb-4 aspect-video bg-gradient-to-br from-brand/10 to-brand-dark/10">
+                  {imageUrl ? (
+                    <Image
+                      src={imageUrl}
+                      alt={`${work.title} - ${work.location ?? 'Ubicación'}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      placeholder="blur"
+                      blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y3RjRFRiIvPjwvc3ZnPg=="
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg
+                        className="w-20 h-20 text-[#D07A22]/20"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <h3 className="text-xl font-bold text-[#111827] group-hover:text-[#D07A22] transition">
+                  {work.title}
+                </h3>
+                <div className="text-sm mb-2 flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (work.location) {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(work.location)}`, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
+                    className="text-[#D07A22] hover:text-[#5A3427] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                  </div>
-                )}
-              </div>
-              <h3 className="text-xl font-bold text-[#111827] group-hover:text-[#D07A22] transition">
-                {work.title}
-              </h3>
-              <div className="text-sm mb-2 flex items-center gap-2">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(work.location)}`, '_blank', 'noopener,noreferrer');
-                  }}
-                  className="text-[#D07A22] hover:text-[#5A3427] transition-colors inline-flex items-center gap-1 cursor-pointer"
-                >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {work.location}
-                </button>
-                <span className="text-[#6B7280]">•</span>
-                <span className="text-[#6B7280]">{work.year}</span>
-              </div>
-              <p className="text-[#D07A22] text-sm font-semibold">
-                {work.category} • {work.areaM2 > 0 ? `${work.areaM2}m²` : '?'}
-              </p>
-            </Link>
-          ))}
+                    {work.location ?? 'Ubicación'}
+                  </button>
+                  <span className="text-[#6B7280]">•</span>
+                  <span className="text-[#6B7280]">{work.year ?? '—'}</span>
+                </div>
+                <p className="text-[#D07A22] text-sm font-semibold">
+                  {categoryLabel} • {areaValue > 0 ? `${areaValue}m²` : '?'}
+                </p>
+              </Link>
+            );
+          })}
         </div>
         )}
       </div>

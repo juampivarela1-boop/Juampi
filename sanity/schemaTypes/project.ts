@@ -42,6 +42,8 @@ export default defineType({
       of: [{ type: 'string' }],
       options: {
         list: [
+          { title: 'Obras Entregadas', value: 'Obras Entregadas' },
+          { title: 'En Obra', value: 'En Obra' },
           { title: 'Casa Nueva', value: 'Casa Nueva' },
           { title: 'Reforma', value: 'Reforma' },
           { title: 'Ampliación', value: 'Ampliación' },

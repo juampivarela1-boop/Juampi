@@ -7,6 +7,8 @@ import MediaSection from '@/components/sections/MediaSection';
 import CTAWhatsApp from '@/components/CTAWhatsApp';
 import { Metadata } from 'next';
 import { localBusinessSchema, websiteSchema } from '@/lib/schema';
+import { client } from '@/lib/sanity.client';
+import { featuredProjectsQuery } from '@/lib/sanity.queries';
 
 export const metadata: Metadata = {
   title: 'Inicio',
@@ -48,7 +50,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  let featuredWorks: any[] = [];
+
+  if (process.env.NEXT_PUBLIC_SANITY_PROJECT_ID && process.env.NEXT_PUBLIC_SANITY_DATASET) {
+    try {
+      featuredWorks = await client.fetch(featuredProjectsQuery);
+    } catch (error) {
+      console.error('Sanity fetch error:', error);
+    }
+  }
+
   return (
     <>
       {/* Schema.org JSON-LD */}
@@ -60,7 +72,7 @@ export default function Home() {
       />
       
       <Hero />
-      <FeaturedWorks />
+      <FeaturedWorks works={featuredWorks} />
       <MediaSection 
         videoId="1wqqGCjq_hA"
         startTime={0}
