@@ -7,6 +7,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import Script from 'next/script';
 import MotionProvider from '@/components/MotionProvider';
 import { generateLocalBusinessSchema, generateWebSiteSchema } from '@/lib/seo';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -166,6 +167,7 @@ export default function RootLayout({
           <Footer />
           <WhatsAppButton />
         </MotionProvider>
+        <Analytics />
       </body>
     </html>
   );
