@@ -4,14 +4,15 @@ import { projectBySlugQuery } from '@/lib/sanity.queries';
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: any }
 ) {
   if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.NEXT_PUBLIC_SANITY_DATASET) {
     return NextResponse.json(null, { status: 404 });
   }
 
   try {
-    const { slug } = await params;
+    const resolvedParams = typeof params.then === 'function' ? await params : params;
+    const { slug } = resolvedParams;
     const project = await client.fetch(projectBySlugQuery, { slug });
 
     if (!project) {

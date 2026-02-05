@@ -60,7 +60,7 @@ export default function Home() {
       />
       
       <Hero />
-      <FeaturedWorks />
+      <FeaturedWorks works={[]} />
       <MediaSection 
         videoId="1wqqGCjq_hA"
         startTime={0}
