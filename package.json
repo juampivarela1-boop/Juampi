@@ -6,12 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "studio:dev": "sanity dev --host localhost --port 3333 --config ./sanity/sanity.config.ts",
+    "studio:deploy": "sanity deploy --config ./sanity/sanity.config.ts",
+    "legacy:import": "node scripts/import-legacy-works.js"
   },
   "dependencies": {
     "@portabletext/react": "^6.0.2",
     "@sanity/client": "^7.14.0",
     "@vercel/analytics": "^1.6.1",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.30.0",
     "groq": "^5.4.0",
     "lucide-react": "^0.562.0",
@@ -20,7 +24,8 @@
     "react": "^19.2.3",
     "react-dom": "19.2.3",
     "react-icons": "^5.5.0",
-    "sanity": "^5.4.0"
+    "sanity": "^5.4.0",
+    "styled-components": "^6.3.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

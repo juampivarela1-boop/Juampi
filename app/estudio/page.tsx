@@ -7,8 +7,6 @@ import MediaSection from '@/components/sections/MediaSection';
 
 const photos = [
   { src: '/Img/martin1.jpg', alt: 'Fotografía profesional de Martín Varvasini en su escritorio' },
-  { src: '/Img/martin2.jpg', alt: 'Martín Varvasini en su estudio de arquitectura' },
-  { src: '/Img/martin3.jpg', alt: 'Martín Varvasini trabajando en proyectos arquitectónicos' },
 ];
 
 export default function Estudio() {
@@ -55,10 +53,7 @@ export default function Estudio() {
               </p>
 
               <p className="text-lg leading-relaxed">
-                Mi enfoque se fundamenta en la combinación de estética
-                contemporánea, funcionalidad impecable y sostenibilidad. Cada
-                proyecto es único y responde a las necesidades específicas de
-                mis clientes.
+                Mi enfoque se fundamenta en el respeto del entorno y la integración del volumen arquitectónico.
               </p>
 
               <div>

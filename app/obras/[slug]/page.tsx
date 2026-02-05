@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -8,25 +7,33 @@ import NextImage from 'next/image';
 import { PortableText } from '@portabletext/react';
 import { urlFor } from '@/lib/sanity.client';
 
-// Mock data - será reemplazado por datos de Sanity
 const mockProjects: Record<string, any> = {
-  'casa-carolina': {
-    title: 'Casa Carolina',
-    location: 'Mar de las Pampas',
-    year: 2019,
-    areaM2: 216,
-    type: 'Casa Nueva',
+  'casa-martin-fierro': {
+    title: 'Casa Martin Fierro',
+    location: 'Villa Gesell',
+    year: 2022,
+    areaM2: 96,
+    type: 'Obras Entregadas',
+      'en-obra-ejemplo': {
+        title: 'Obra Ejemplo en Proceso',
+        location: 'Ubicación Ejemplo',
+        year: 2026,
+        areaM2: 120,
+        type: 'En obra',
+        description: 'Proyecto actualmente en construcción.',
+        images: [
+          { id: 1, url: '/Img/ejemplo_en_obra.jpg' },
+        ],
+      },
     description:
-      'Casa Carolina es un proyecto residencial de 216m² que ejemplifica el compromiso con la arquitectura sustentable y el diseño contemporáneo. Situada en Mar de las Pampas, esta vivienda responde a las necesidades de confort y funcionalidad, integrándose armoniosamente con el entorno natural. La propuesta arquitectónica prioriza la eficiencia energética, la utilización de materiales nobles y la generación de espacios luminosos que potencian la calidad de vida de sus habitantes.',
+      'Casa Martin Fierro. Reforma y ampliación en Villa Gesell.',
     images: [
-      { id: 1, url: '/Img/CASA CAROLINA/SaveClip.App_426710204_372069262263432_6947105437362156218_n.jpg' },
-      { id: 2, url: '/Img/CASA CAROLINA/SaveClip.App_426985872_1135797071207775_2804125062818619571_n.jpg' },
-      { id: 3, url: '/Img/CASA CAROLINA/SaveClip.App_427350781_2634388566735539_6001662775699683640_n.jpg' },
-      { id: 4, url: '/Img/CASA CAROLINA/SaveClip.App_427379152_395873686391003_4496936667000640248_n.jpg' },
-      { id: 5, url: '/Img/CASA CAROLINA/SaveClip.App_427425504_781349277373712_8104704633672810949_n.jpg' },
-      { id: 6, url: '/Img/CASA CAROLINA/SaveClip.App_427432193_950769433334472_4075134637766725689_n.jpg' },
-      { id: 7, url: '/Img/CASA CAROLINA/SaveClip.App_427448269_379209851516439_5236530079631382353_n.jpg' },
-      { id: 8, url: '/Img/CASA CAROLINA/SaveClip.App_427626269_398495132628292_1621978150936607866_n.jpg' },
+      { id: 1, url: '/Img/Martin fierro cas/482355131_1169806148169507_2205687858580211105_n.jpg' },
+      { id: 2, url: '/Img/Martin fierro cas/482960588_1169806078169514_2223957673296941792_n.jpg' },
+      { id: 3, url: '/Img/Martin fierro cas/482976499_1169806181502837_3922680593165487813_n.jpg' },
+      { id: 4, url: '/Img/Martin fierro cas/484051211_1169806134836175_8327949270262775848_n.jpg' },
+      { id: 5, url: '/Img/Martin fierro cas/484354963_1169806114836177_6234552616617181515_n.jpg' },
+      { id: 6, url: '/Img/Martin fierro cas/484530955_1169806144836174_8108447736841204502_n.jpg' },
     ],
   },
   'casa-marinas': {
@@ -34,7 +41,7 @@ const mockProjects: Record<string, any> = {
     location: 'Escobar',
     year: 2020,
     areaM2: 546.12,
-    type: 'Casa Nueva',
+    type: 'Obras Entregadas',
     description:
       'Casa diseñada para Fernanda y Alfredo en Escobar. Un proyecto de 546m² que combina espacios amplios con diseño contemporáneo, creando ambientes luminosos y funcionales que se integran perfectamente con su entorno. La distribución privilegia las vistas y la conexión con el exterior.',
     images: [
@@ -57,7 +64,7 @@ const mockProjects: Record<string, any> = {
     location: 'Calle Vega y Artes, Mar de las Pampas',
     year: 2013,
     areaM2: 151.07,
-    type: 'Casa Nueva',
+    category: 'Obras Entregadas',
     description:
       'Casa "PRANA" - Quiero agradecer mucho a Marcelo y Mónica por confiar en nosotros para este proyecto. Ha sido genial trabajar con ustedes y ayudar a hacer realidad sus ideas. Gracias por darnos la oportunidad y el apoyo. Fotos: Gentileza Esteban Turón.',
     images: [
@@ -311,7 +318,7 @@ const mockProjects: Record<string, any> = {
     location: 'Mar Azul',
     year: 2011,
     areaM2: 0,
-    type: 'Reforma',
+    type: 'Obras Entregadas',
     description: 'Con el incansable aporte de MMO. Adrián Godoy y la inestimable colaboración de mi amigo-hermano ARQ. Esteban Turon.',
     images: [
       { id: 1, url: '/Img/Casa Selva Mar Azul/502531338_9891605647593271_3640422129201881606_n.jpg' },
@@ -828,7 +835,7 @@ const mockProjects: Record<string, any> = {
     location: 'Villa Gesell',
     year: 2022,
     areaM2: 175,
-    type: 'Ampliación',
+    type: 'Obras Entregadas',
     description:
       'Ampliación Apart "La Morada" - Proyecto de 175 m² que incluye 4 departamentos, piscina cubierta y spa. Un proyecto integral de ampliación en Villa Gesell que combina funcionalidad y confort, diseñado para ofrecer una experiencia de hospedaje completa. Gracias a Emiliano por confiar en el estudio.',
     images: [
@@ -867,12 +874,20 @@ export default function ProjectDetail() {
         const response = await fetch(`/api/works/${slug}`, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
-          if (data && isMounted) {
-            setProject(data);
+          if (isMounted) {
+            // Si la respuesta es null, undefined o no tiene imágenes, usar mock
+            if (!data || !data.images || data.images.length === 0) {
+              setProject(mockProjects[slug] || mockProjects['casa-marinas']);
+            } else {
+              setProject(data);
+            }
           }
+        } else {
+          if (isMounted) setProject(mockProjects[slug] || mockProjects['casa-marinas']);
         }
       } catch (error) {
         console.error('No se pudo cargar la obra desde Sanity:', error);
+        if (isMounted) setProject(mockProjects[slug] || mockProjects['casa-marinas']);
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -895,8 +910,9 @@ export default function ProjectDetail() {
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0 && isMounted) {
-          const slugs = data.map((item: any) => item.slug).filter(Boolean);
-          if (slugs.length > 0) setProjectSlugsState(slugs);
+          const sanitySlugs = data.map((item: any) => item.slug).filter(Boolean);
+          const merged = Array.from(new Set([...projectSlugs, ...sanitySlugs]));
+          if (merged.length > 0) setProjectSlugsState(merged);
         }
       } catch (error) {
         console.error('No se pudieron cargar los slugs desde Sanity:', error);
@@ -1141,7 +1157,7 @@ export default function ProjectDetail() {
           </Link>
           <Link
             href="/contacto"
-            className="bg-brand text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition"
+            className="bg-brand text-black px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition hover:bg-[#7c4a03] hover:text-white"
           >
             Contactar
           </Link>

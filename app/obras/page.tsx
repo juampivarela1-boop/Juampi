@@ -453,11 +453,6 @@ const categories = [
   'Todas',
   'Obras Entregadas',
   'En Obra',
-  'Casa Nueva',
-  'Reforma',
-  'Ampliación',
-  'Interiorismo',
-  'Dirección de Obra',
 ];
 
 export default function ObrasList() {
@@ -466,6 +461,23 @@ export default function ObrasList() {
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'location'>('newest');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+
+  const mergeWorks = (staticWorks: typeof mockWorks, cmsWorks: any[]) => {
+    const bySlug = new Map<string, any>();
+
+    staticWorks.forEach((work) => {
+      if (work.slug) bySlug.set(work.slug, work);
+    });
+
+    cmsWorks.forEach((work) => {
+      if (work?.slug) {
+        const prev = bySlug.get(work.slug) || {};
+        bySlug.set(work.slug, { ...prev, ...work });
+      }
+    });
+
+    return Array.from(bySlug.values());
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -477,7 +489,7 @@ export default function ObrasList() {
 
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0 && isMounted) {
-          setWorks(data);
+          setWorks(mergeWorks(mockWorks, data));
         }
       } catch (error) {
         console.error('No se pudieron cargar obras desde Sanity:', error);

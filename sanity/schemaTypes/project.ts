@@ -44,11 +44,6 @@ export default defineType({
         list: [
           { title: 'Obras Entregadas', value: 'Obras Entregadas' },
           { title: 'En Obra', value: 'En Obra' },
-          { title: 'Casa Nueva', value: 'Casa Nueva' },
-          { title: 'Reforma', value: 'Reforma' },
-          { title: 'Ampliación', value: 'Ampliación' },
-          { title: 'Interiorismo', value: 'Interiorismo' },
-          { title: 'Dirección de Obra', value: 'Dirección de Obra' },
         ],
       },
     }),

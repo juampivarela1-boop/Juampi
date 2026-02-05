@@ -7,7 +7,7 @@ import { containerVariants, itemVariants, scrollReveal } from '@/lib/animations'
 const services = [
   {
     title: 'Casa Nueva',
-    description: 'Diseño integral de viviendas modernas desde cero.',
+    description: 'Diseño integral de viviendas desde cero.',
     Icon: Home,
   },
   {
@@ -21,13 +21,13 @@ const services = [
     Icon: Ruler,
   },
   {
-    title: 'Interiorismo',
-    description: 'Diseño de interiores personalizado y sofisticado.',
+    title: 'Gestiones Municipales',
+    description: 'Presentación y seguimiento de planos municipales.',
     Icon: Palette,
   },
   {
     title: 'Dirección de Obra',
-    description: 'Supervisión profesional de todo el proceso constructivo.',
+    description: 'Supervisamos con detalle constructivo y calidad de materiales durante la ejecución del proyecto.',
     Icon: ClipboardList,
   },
   {

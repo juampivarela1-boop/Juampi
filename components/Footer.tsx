@@ -174,9 +174,17 @@ export default function Footer() {
               >
                 Política de Privacidad
               </Link>
+              <Link
+                href="/creditos"
+                className="text-white/50 hover:text-[var(--brand)] transition-colors text-xs ml-4"
+                title="Ver créditos y contacto del desarrollador"
+              >
+                Créditos y contacto
+              </Link>
               <p className="text-white/50 text-xs">
                 Diseñado y desarrollado con precisión.
               </p>
+              {/* Eliminado bloque de promoción de desarrollo web */}
             </div>
           </div>
         </motion.div>

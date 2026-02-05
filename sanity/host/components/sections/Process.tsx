@@ -6,15 +6,15 @@ import { containerVariants, itemVariants, scrollReveal } from '@/lib/animations'
 const steps = [
   {
     number: '01',
-    title: 'Consulta Inicial',
+    title: 'Casa Nueva',
     description:
-      'Conocemos tu proyecto, necesidades, presupuesto y cronograma.',
+      'Diseño integral de viviendas desde cero. Incorporamos tus necesidades y deseos en un proyecto único.',
   },
   {
     number: '02',
-    title: 'Propuesta de Diseño',
+    title: 'Gestiones Municipales',
     description:
-      'Desarrollamos propuestas creativas ajustadas a tus requerimientos.',
+      'Presentación y seguimiento de planos municipales.',
   },
   {
     number: '03',
@@ -26,7 +26,7 @@ const steps = [
     number: '04',
     title: 'Dirección de Obra',
     description:
-      'Supervisamos cada detalle durante toda la ejecución del proyecto.',
+      'Supervisamos con detalle constructivo y calidad de materiales durante la ejecución del proyecto.',
   },
 ];
 

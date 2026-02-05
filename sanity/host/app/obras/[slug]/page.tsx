@@ -13,7 +13,7 @@ const mockProjects: Record<string, any> = {
     location: 'Mar de las Pampas',
     year: 2019,
     areaM2: 216,
-    type: 'Casa Nueva',
+    category: 'Obras Entregadas',
     description:
       'Casa Carolina es un proyecto residencial de 216m² que ejemplifica el compromiso con la arquitectura sustentable y el diseño contemporáneo. Situada en Mar de las Pampas, esta vivienda responde a las necesidades de confort y funcionalidad, integrándose armoniosamente con el entorno natural. La propuesta arquitectónica prioriza la eficiencia energética, la utilización de materiales nobles y la generación de espacios luminosos que potencian la calidad de vida de sus habitantes.',
     images: [
@@ -32,7 +32,7 @@ const mockProjects: Record<string, any> = {
     location: 'Escobar',
     year: 2020,
     areaM2: 546.12,
-    type: 'Casa Nueva',
+    category: 'Obras Entregadas',
     description:
       'Casa diseñada para Fernanda y Alfredo en Escobar. Un proyecto de 546m² que combina espacios amplios con diseño contemporáneo, creando ambientes luminosos y funcionales que se integran perfectamente con su entorno. La distribución privilegia las vistas y la conexión con el exterior.',
     images: [
@@ -55,7 +55,7 @@ const mockProjects: Record<string, any> = {
     location: 'Calle Vega y Artes, Mar de las Pampas',
     year: 2013,
     areaM2: 151.07,
-    type: 'Casa Nueva',
+    category: 'Obras Entregadas',
     description:
       'Casa "PRANA" - Quiero agradecer mucho a Marcelo y Mónica por confiar en nosotros para este proyecto. Ha sido genial trabajar con ustedes y ayudar a hacer realidad sus ideas. Gracias por darnos la oportunidad y el apoyo. Fotos: Gentileza Esteban Turón.',
     images: [

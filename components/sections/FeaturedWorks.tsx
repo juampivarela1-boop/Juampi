@@ -14,14 +14,42 @@ type FeaturedWork = {
   year?: number;
   category?: string[] | string;
   coverImage?: any;
+  image?: string;
 };
 
 type FeaturedWorksProps = {
   works: FeaturedWork[];
 };
 
+const fallbackWorks: FeaturedWork[] = [
+  {
+    title: 'Casa Carolina',
+    slug: 'casa-carolina',
+    location: 'Mar de las Pampas',
+    year: 2019,
+    category: 'Obras Entregadas',
+    image: '/Img/CASA CAROLINA/SaveClip.App_426985872_1135797071207775_2804125062818619571_n.jpg',
+  },
+  {
+    title: 'Casa Prana',
+    slug: 'casa-prana',
+    location: 'Calle Vega y Artes, Mar de las Pampas',
+    year: 2013,
+    category: 'Casa Nueva',
+    image: '/Img/casa-prana-destacada.jpg',
+  },
+  {
+    title: 'Casa Antü Pewen',
+    slug: 'casa-antu-pewen',
+    location: 'Mar de las Pampas',
+    year: 2023,
+    category: 'Casa Nueva',
+    image: '/Img/casa Antü Pewen/86_1_n.jpg',
+  },
+];
+
 export default function FeaturedWorks({ works }: FeaturedWorksProps) {
-  const items = Array.isArray(works) ? works : [];
+  const items = Array.isArray(works) && works.length > 0 ? works : fallbackWorks;
 
   return (
     <section className="section bg-white relative">
@@ -52,9 +80,11 @@ export default function FeaturedWorks({ works }: FeaturedWorksProps) {
             const categoryLabel = Array.isArray(work.category)
               ? work.category[0]
               : work.category || 'Proyecto';
-            const imageUrl = work.coverImage
-              ? urlFor(work.coverImage).width(900).height(1200).url()
-              : null;
+            const imageUrl = work.image
+              ? work.image
+              : work.coverImage
+                ? urlFor(work.coverImage).width(900).height(1200).url()
+                : null;
 
             return (
             <motion.div

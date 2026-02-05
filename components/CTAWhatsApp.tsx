@@ -35,7 +35,7 @@ export default function CTAWhatsApp() {
                   target="_blank"
                   rel="noopener noreferrer"
                   {...cardHover}
-                  className="btn-primary w-full sm:w-auto"
+                  className={`btn-primary w-full sm:w-auto text-black`}
                   title="Contacto directo por WhatsApp"
                   aria-label="Iniciar conversación de WhatsApp para consulta"
                 >

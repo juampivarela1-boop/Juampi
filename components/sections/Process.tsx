@@ -24,7 +24,7 @@ const steps = [
   },
   {
     number: '04',
-    title: 'Dirección de Obra',
+    title: 'Obras Entregadas',
     description:
       'Supervisamos cada detalle durante toda la ejecución del proyecto.',
   },
