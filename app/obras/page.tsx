@@ -684,7 +684,7 @@ export default function ObrasList() {
 
                     return (
                       <Link
-                        key={work._id ?? work.id ?? work.slug}
+                        key={work.id ?? work.slug}
                         href={`/obras/${work.slug}`}
                         className="group"
                       >
@@ -753,7 +753,7 @@ export default function ObrasList() {
 
             return (
               <Link
-                key={work._id ?? work.id ?? work.slug}
+                key={work.id ?? work.slug}
                 href={`/obras/${work.slug}`}
                 className="group"
               >
