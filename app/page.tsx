@@ -74,7 +74,7 @@ export default async function Home() {
       <Hero />
       <FeaturedWorks works={featuredWorks} />
       <MediaSection 
-        videoId="1wqqGCjq_hA"
+        videoId="3Pq5RfysoAg"
         startTime={0}
         title="Entrevista"
         description="Conocé la manera de proyectar y dirigir obra de Martín Varvasini."
