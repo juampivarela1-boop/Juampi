@@ -210,7 +210,7 @@ export default function Estudio() {
 
       {/* Entrevista */}
       <MediaSection 
-        videoId="1wqqGCjq_hA"
+        videoId="3Pq5RfysoAg"
         startTime={0}
         title="Entrevista"
         description="Conocé el enfoque de Martín Varvasini en una nota donde explica su manera de proyectar y dirigir obra."
