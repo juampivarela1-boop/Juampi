@@ -14,7 +14,17 @@ const mockWorks = [
     slug: 'casa-carolina',
     category: 'Obras Entregadas',
     areaM2: 216,
-    image: '/Img/CASA CAROLINA/SaveClip.App_426985872_1135797071207775_2804125062818619571_n.jpg',
+    image: '/Img/CASA CAROLINA/SaveClip.App_426710204_372069262263432_6947105437362156218_n.jpg', // portada
+    images: [
+      { id: 1, url: '/Img/CASA CAROLINA/SaveClip.App_426710204_372069262263432_6947105437362156218_n.jpg' },
+      { id: 2, url: '/Img/CASA CAROLINA/SaveClip.App_426985872_1135797071207775_2804125062818619571_n.jpg' },
+      { id: 3, url: '/Img/CASA CAROLINA/SaveClip.App_427350781_2634388566735539_6001662775699683640_n.jpg' },
+      { id: 4, url: '/Img/CASA CAROLINA/SaveClip.App_427379152_395873686391003_4496936667000640248_n.jpg' },
+      { id: 5, url: '/Img/CASA CAROLINA/SaveClip.App_427425504_781349277373712_8104704633672810949_n.jpg' },
+      { id: 6, url: '/Img/CASA CAROLINA/SaveClip.App_427432193_950769433334472_4075134637766725689_n.jpg' },
+      { id: 7, url: '/Img/CASA CAROLINA/SaveClip.App_427448269_379209851516439_5236530079631382353_n.jpg' },
+      { id: 8, url: '/Img/CASA CAROLINA/SaveClip.App_427626269_398495132628292_1621978150936607866_n.jpg' },
+    ],
   },
   {
     id: 2,
@@ -94,7 +104,7 @@ const mockWorks = [
     slug: 'casa-valeria-del-mar',
     category: 'Obras Entregadas',
     areaM2: 0,
-    image: '/Img/CASA VALERIA DEL MAR/482319405_1168738581609597_7057043746754401797_n.jpg',
+    image: '/Img/CASA VALERIA DEL MAR/482343866_1168738568276265_2763599324554773080_n.jpg',
   },
   {
     id: 10,
@@ -105,6 +115,16 @@ const mockWorks = [
     category: 'Obras Entregadas',
     areaM2: 0,
     image: '/Img/Casa Mario y Sandra/514417597_23870598835934050_3763323217747048216_n.jpg',
+  },
+  {
+    id: 3,
+    title: 'Casa Martin Fierro',
+    location: 'Calle Martin Fierro',
+    year: 2022,
+    slug: 'casa-martin-fierro',
+    category: 'Obras Entregadas',
+    areaM2: 96,
+    image: '/Img/Martin fierro cas/482355131_1169806148169507_2205687858580211105_n.jpg',
   },
   {
     id: 11,

@@ -8,6 +8,25 @@ import { PortableText } from '@portabletext/react';
 import { urlFor } from '@/lib/sanity.client';
 
 const mockProjects: Record<string, any> = {
+    'casa-carolina': {
+      title: 'Casa Carolina',
+      location: 'Mar de las Pampas',
+      year: 2019,
+      areaM2: 216,
+      type: 'Obras Entregadas',
+      description:
+        'Casa Carolina es un proyecto residencial de 216m² que ejemplifica el compromiso con la arquitectura sustentable y el diseño contemporáneo. Situada en Mar de las Pampas, esta vivienda responde a las necesidades de confort y funcionalidad, integrándose armoniosamente con el entorno natural. La propuesta arquitectónica prioriza la eficiencia energética, la utilización de materiales nobles y la generación de espacios luminosos que potencian la calidad de vida de sus habitantes.',
+      images: [
+        { id: 1, url: '/Img/CASA CAROLINA/SaveClip.App_426710204_372069262263432_6947105437362156218_n.jpg' },
+        { id: 2, url: '/Img/CASA CAROLINA/SaveClip.App_426985872_1135797071207775_2804125062818619571_n.jpg' },
+        { id: 3, url: '/Img/CASA CAROLINA/SaveClip.App_427350781_2634388566735539_6001662775699683640_n.jpg' },
+        { id: 4, url: '/Img/CASA CAROLINA/SaveClip.App_427379152_395873686391003_4496936667000640248_n.jpg' },
+        { id: 5, url: '/Img/CASA CAROLINA/SaveClip.App_427425504_781349277373712_8104704633672810949_n.jpg' },
+        { id: 6, url: '/Img/CASA CAROLINA/SaveClip.App_427432193_950769433334472_4075134637766725689_n.jpg' },
+        { id: 7, url: '/Img/CASA CAROLINA/SaveClip.App_427448269_379209851516439_5236530079631382353_n.jpg' },
+        { id: 8, url: '/Img/CASA CAROLINA/SaveClip.App_427626269_398495132628292_1621978150936607866_n.jpg' },
+      ],
+    },
   'casa-martin-fierro': {
     title: 'Casa Martin Fierro',
     location: 'Villa Gesell',

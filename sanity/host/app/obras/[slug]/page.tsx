@@ -847,7 +847,15 @@ const projectSlugs = ['casa-carolina', 'casa-marinas', 'casa-myj', 'casa-martin-
 export default function ProjectDetail() {
   const params = useParams();
   const slug = params.slug as string;
-  const mockProjectDetail = mockProjects[slug] || mockProjects['casa-marinas'];
+  const mockProjectDetail = mockProjects[slug];
+  if (!mockProjectDetail) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center">
+        <h1 className="text-3xl font-bold mb-4">Obra no encontrada</h1>
+        <Link href="/obras" className="text-brand underline">Volver a obras</Link>
+      </main>
+    );
+  }
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(0);
 
