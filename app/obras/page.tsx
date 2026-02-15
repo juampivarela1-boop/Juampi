@@ -30,7 +30,7 @@ const mockWorks = [
   {
     id: 3,
     title: 'Casa Martin Fierro',
-    location: 'Calle Martin Fierro',
+    location: 'Villa Gesell',
     year: 2022,
     slug: 'casa-martin-fierro',
     category: 'Obras Entregadas',
