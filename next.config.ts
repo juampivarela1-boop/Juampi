@@ -1,15 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/contacto.php',
-        destination: '/contacto',
-        permanent: true,
-      },
-    ];
-  },
   images: {
     remotePatterns: [
       {
@@ -56,6 +47,21 @@ const nextConfig: NextConfig = {
 
   // Optimize for production
   reactStrictMode: true,
+  // ✅ Redirects para URLs viejas .php -> rutas nuevas
+  redirects: async () => {
+    return [
+      // Caso especial: index.php suele ser la home
+      { source: "/index.php", destination: "/", permanent: true },
+
+      // Genérico: cualquier /algo.php -> /algo
+      // Ej: /contacto.php -> /contacto
+      //     /servicios.php -> /servicios
+      { source: "/:path*.php", destination: "/:path*", permanent: true },
+
+      // Si llegara a aparecer con slash final (raro, pero pasa)
+      { source: "/:path*.php/", destination: "/:path*", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
