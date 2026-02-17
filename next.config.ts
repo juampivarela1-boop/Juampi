@@ -50,15 +50,19 @@ const nextConfig: NextConfig = {
   // ✅ Redirects para URLs viejas .php -> rutas nuevas
   redirects: async () => {
     return [
-      // Caso especial: index.php suele ser la home
+      // ✅ URL vieja sin .php
+      { source: "/obrasejecutadas", destination: "/obras", permanent: true },
+      { source: "/obrasejecutadas/", destination: "/obras", permanent: true },
+
+      // (si tu ruta real es /proyectos, usá esto en vez de /obras)
+      // { source: "/obrasejecutadas", destination: "/proyectos", permanent: true },
+      // { source: "/obrasejecutadas/", destination: "/proyectos", permanent: true },
+
+      // ✅ index.php -> home
       { source: "/index.php", destination: "/", permanent: true },
 
-      // Genérico: cualquier /algo.php -> /algo
-      // Ej: /contacto.php -> /contacto
-      //     /servicios.php -> /servicios
+      // ✅ cualquier /algo.php -> /algo
       { source: "/:path*.php", destination: "/:path*", permanent: true },
-
-      // Si llegara a aparecer con slash final (raro, pero pasa)
       { source: "/:path*.php/", destination: "/:path*", permanent: true },
     ];
   },
