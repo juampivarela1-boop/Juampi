@@ -50,18 +50,29 @@ const nextConfig: NextConfig = {
   // ✅ Redirects para URLs viejas .php -> rutas nuevas
   redirects: async () => {
     return [
-      // ✅ URL vieja sin .php
+      // ---- URLs viejas sin .php (secciones antiguas)
       { source: "/obrasejecutadas", destination: "/obras", permanent: true },
       { source: "/obrasejecutadas/", destination: "/obras", permanent: true },
 
-      // (si tu ruta real es /proyectos, usá esto en vez de /obras)
-      // { source: "/obrasejecutadas", destination: "/proyectos", permanent: true },
-      // { source: "/obrasejecutadas/", destination: "/proyectos", permanent: true },
+      { source: "/obrasenejecucion", destination: "/obras", permanent: true },
+      { source: "/obrasenejecucion/", destination: "/obras", permanent: true },
 
-      // ✅ index.php -> home
+      { source: "/administraciondepropiedades", destination: "/servicios", permanent: true },
+      { source: "/administraciondepropiedades/", destination: "/servicios", permanent: true },
+
+      // ---- URL vieja dinámica con query ?id=...
+      // manda cualquier /obra?id=72 a /obras (listado)
+      {
+        source: "/obra",
+        has: [{ type: "query", key: "id" }],
+        destination: "/obras",
+        permanent: true,
+      },
+      // por si alguien entra sin query
+      { source: "/obra", destination: "/obras", permanent: true },
+
+      // ---- .php -> sin .php (genérico)
       { source: "/index.php", destination: "/", permanent: true },
-
-      // ✅ cualquier /algo.php -> /algo
       { source: "/:path*.php", destination: "/:path*", permanent: true },
       { source: "/:path*.php/", destination: "/:path*", permanent: true },
     ];
