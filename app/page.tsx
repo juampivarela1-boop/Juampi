@@ -11,7 +11,7 @@ import { client } from '@/lib/sanity.client';
 import { featuredProjectsQuery } from '@/lib/sanity.queries';
 
 export const metadata: Metadata = {
-  title: 'Inicio',
+  title: 'Arq. Martín Varvasini | Estudio de Arquitectura', 
   description:
     'Estudio de arquitectura. Diseño de casas modernas, dirección de obra, reformas y ampliaciones. Más de 24 años de experiencia y 50+ proyectos ejecutados.',
   keywords: [

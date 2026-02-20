@@ -139,9 +139,8 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="icon" href="/logo-nuevo.png" type="image/png" />
+
         <meta name="theme-color" content="#D07A22" />
         
         {/* JSON-LD Structured Data */}
